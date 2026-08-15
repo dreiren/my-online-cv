@@ -1,0 +1,134 @@
+"use client";
+
+import { useRef, type CSSProperties, type ReactNode } from "react";
+import { motion, useInView } from "framer-motion";
+
+export type JarvisFrameProps = {
+  children?: ReactNode;
+  code: string;
+  title: string;
+  moduleId: string;
+  width: string;
+  height: string;
+  accent?: string;
+};
+
+const frameVariants = {
+  idle: { opacity: 0.18, scale: 0.975 },
+  online: {
+    opacity: [0.18, 0.55, 0.22, 1, 0.72, 1],
+    scale: 1,
+    transition: {
+      duration: 0.72,
+      times: [0, 0.16, 0.3, 0.48, 0.68, 1],
+      ease: "easeOut",
+    },
+  },
+};
+
+const chromeVariants = {
+  idle: { opacity: 0, y: -6 },
+  online: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.45, delay: 0.12, ease: [0.22, 1, 0.36, 1] },
+  },
+};
+
+const cornerVariants = {
+  idle: { opacity: 0, scale: 0.45 },
+  online: {
+    opacity: 1,
+    scale: 1,
+    transition: { duration: 0.4, delay: 0.08, ease: [0.16, 1, 0.3, 1] },
+  },
+};
+
+export default function JarvisFrame({
+  children,
+  code,
+  title,
+  moduleId,
+  width,
+  height,
+  accent = "#12c0e0",
+}: JarvisFrameProps) {
+  const ref = useRef<HTMLElement>(null);
+  const isInView = useInView(ref, { amount: 0.55 });
+
+  return (
+    <motion.article
+      ref={ref}
+      className="jarvis-console"
+      style={
+        {
+          "--console-width": width,
+          "--console-height": height,
+          "--jarvis-accent": accent,
+        } as CSSProperties
+      }
+      variants={frameVariants}
+      initial="idle"
+      animate={isInView ? "online" : "idle"}
+      aria-label={`${title} console`}
+    >
+      <motion.span
+        className="jarvis-console__corner jarvis-console__corner--tl"
+        variants={cornerVariants}
+      />
+      <motion.span
+        className="jarvis-console__corner jarvis-console__corner--tr"
+        variants={cornerVariants}
+      />
+      <motion.span
+        className="jarvis-console__corner jarvis-console__corner--bl"
+        variants={cornerVariants}
+      />
+      <motion.span
+        className="jarvis-console__corner jarvis-console__corner--br"
+        variants={cornerVariants}
+      />
+
+      <motion.header className="jarvis-console__chrome" variants={chromeVariants}>
+        <div className="jarvis-console__mark">
+          <span className="jarvis-console__code">{code}</span>
+          <span className="jarvis-console__title">{title}</span>
+        </div>
+        <div className="jarvis-console__status">
+          <span className="jarvis-console__module">{moduleId}</span>
+          <span className="jarvis-console__live">
+            {isInView ? "ONLINE" : "STANDBY"}
+          </span>
+        </div>
+      </motion.header>
+
+      <div className="jarvis-console__viewport">{children}</div>
+
+      <motion.footer className="jarvis-console__chrome" variants={chromeVariants}>
+        <span>J.A.R.V.I.S. // LINK</span>
+        <span className="jarvis-console__size">SIZE.FLEX</span>
+        <span>{isInView ? "SYS.READY" : "SYS.IDLE"}</span>
+      </motion.footer>
+
+      <span className="jarvis-console__arc" />
+      <span className="jarvis-console__ticks" />
+
+      <motion.span
+        className="jarvis-console__scan"
+        variants={{
+          idle: { top: "-8%", opacity: 0 },
+          online: {
+            top: ["-8%", "108%"],
+            opacity: [0, 0.85, 0],
+            transition: {
+              duration: 1.55,
+              repeat: Infinity,
+              repeatDelay: 3.4,
+              ease: "easeInOut",
+            },
+          },
+        }}
+      />
+    </motion.article>
+  );
+}
