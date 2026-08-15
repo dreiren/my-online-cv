@@ -2,6 +2,7 @@
 
 import { type CSSProperties, type ReactNode } from "react";
 import { motion, type Variants } from "framer-motion";
+import MetalFrame from "./MetalFrame";
 
 export type JarvisFrameProps = {
   children?: ReactNode;
@@ -22,7 +23,7 @@ const frameVariants = {
     transition: {
       duration: 0.72,
       times: [0, 0.18, 0.42, 0.64, 1],
-      ease: "easeOut" as const,
+      ease: "easeIn" as const,
     },
   },
 } satisfies Variants;
@@ -32,7 +33,7 @@ const chromeVariants = {
   online: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.45, delay: 0.12, ease: [0.22, 1, 0.36, 1] as const },
+    transition: { duration: 0.45, delay: 0.12, ease: "easeIn" as const },
   },
 } satisfies Variants;
 
@@ -41,7 +42,7 @@ const cornerVariants = {
   online: {
     opacity: 1,
     scale: 1,
-    transition: { duration: 0.4, delay: 0.08, ease: [0.16, 1, 0.3, 1] as const },
+    transition: { duration: 0.4, delay: 0.08, ease: "easeIn" as const },
   },
 } satisfies Variants;
 
@@ -54,7 +55,7 @@ const scanVariants = {
       duration: 1.55,
       repeat: Infinity,
       repeatDelay: 3.4,
-      ease: "easeInOut" as const,
+      ease: "easeIn" as const,
     },
   },
 } satisfies Variants;
@@ -70,8 +71,8 @@ export default function JarvisFrame({
   active = false,
 }: JarvisFrameProps) {
   return (
-    <motion.article
-      className="jarvis-console"
+    <motion.div
+      className="metal-console"
       style={
         {
           "--console-width": width,
@@ -82,50 +83,53 @@ export default function JarvisFrame({
       variants={frameVariants}
       initial="idle"
       animate={active ? "online" : "idle"}
-      aria-label={`${title} console`}
     >
-      <motion.span
-        className="jarvis-console__corner jarvis-console__corner--tl"
-        variants={cornerVariants}
-      />
-      <motion.span
-        className="jarvis-console__corner jarvis-console__corner--tr"
-        variants={cornerVariants}
-      />
-      <motion.span
-        className="jarvis-console__corner jarvis-console__corner--bl"
-        variants={cornerVariants}
-      />
-      <motion.span
-        className="jarvis-console__corner jarvis-console__corner--br"
-        variants={cornerVariants}
-      />
+      <MetalFrame>
+        <article className="jarvis-console" aria-label={`${title} console`}>
+          <motion.span
+            className="jarvis-console__corner jarvis-console__corner--tl"
+            variants={cornerVariants}
+          />
+          <motion.span
+            className="jarvis-console__corner jarvis-console__corner--tr"
+            variants={cornerVariants}
+          />
+          <motion.span
+            className="jarvis-console__corner jarvis-console__corner--bl"
+            variants={cornerVariants}
+          />
+          <motion.span
+            className="jarvis-console__corner jarvis-console__corner--br"
+            variants={cornerVariants}
+          />
 
-      <motion.header className="jarvis-console__chrome" variants={chromeVariants}>
-        <div className="jarvis-console__mark">
-          <span className="jarvis-console__code">{code}</span>
-          <span className="jarvis-console__title">{title}</span>
-        </div>
-        <div className="jarvis-console__status">
-          <span className="jarvis-console__module">{moduleId}</span>
-          <span className="jarvis-console__live">
-            {active ? "ONLINE" : "STANDBY"}
-          </span>
-        </div>
-      </motion.header>
+          <motion.header className="jarvis-console__chrome" variants={chromeVariants}>
+            <div className="jarvis-console__mark">
+              <span className="jarvis-console__code">{code}</span>
+              <span className="jarvis-console__title">{title}</span>
+            </div>
+            <div className="jarvis-console__status">
+              <span className="jarvis-console__module">{moduleId}</span>
+              <span className="jarvis-console__live">
+                {active ? "ONLINE" : "STANDBY"}
+              </span>
+            </div>
+          </motion.header>
 
-      <div className="jarvis-console__viewport">{children}</div>
+          <div className="jarvis-console__viewport">{children}</div>
 
-      <motion.footer className="jarvis-console__chrome" variants={chromeVariants}>
-        <span>J.A.R.V.I.S. // LINK</span>
-        <span className="jarvis-console__size">SIZE.FLEX</span>
-        <span>{active ? "SYS.READY" : "SYS.IDLE"}</span>
-      </motion.footer>
+          <motion.footer className="jarvis-console__chrome" variants={chromeVariants}>
+            <span>J.A.R.V.I.S. // LINK</span>
+            <span className="jarvis-console__size">SIZE.FLEX</span>
+            <span>{active ? "SYS.READY" : "SYS.IDLE"}</span>
+          </motion.footer>
 
-      <span className="jarvis-console__arc" />
-      <span className="jarvis-console__ticks" />
+          <span className="jarvis-console__arc" />
+          <span className="jarvis-console__ticks" />
 
-      <motion.span className="jarvis-console__scan" variants={scanVariants} />
-    </motion.article>
+          <motion.span className="jarvis-console__scan" variants={scanVariants} />
+        </article>
+      </MetalFrame>
+    </motion.div>
   );
 }

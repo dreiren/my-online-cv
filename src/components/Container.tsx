@@ -75,7 +75,7 @@ export default function Container({ onFlightChange }: ContainerProps) {
       camRoll.set(intro.roll);
 
       setPoses(nextPoses);
-      fly(intro, first, 2.05);
+      fly(intro, first, 2.35);
     });
 
     return () => window.cancelAnimationFrame(frame);
@@ -119,8 +119,8 @@ export default function Container({ onFlightChange }: ContainerProps) {
 
     const transition = {
       duration,
-      times: [0, 0.44, 1],
-      ease: [0.42, 0.02, 0.18, 1] as const,
+      times: [0, 0.52, 1],
+      ease: "easeIn" as const,
     };
 
     const channels: Array<[typeof camX, number, number, number]> = [
@@ -156,7 +156,7 @@ export default function Container({ onFlightChange }: ContainerProps) {
 
     activeIndexRef.current = next;
     setActiveIndex(next);
-    fly(from, to, compact ? 1.35 : 1.8);
+    fly(from, to, compact ? 1.55 : 2.15);
   }
 
   useEffect(() => {
