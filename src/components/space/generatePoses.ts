@@ -102,7 +102,7 @@ export function flightMidpoint(from: CameraRig, to: CameraRig): CameraRig {
   return {
     x: (from.x + to.x) / 2 - dy * 0.28,
     y: (from.y + to.y) / 2 - Math.abs(dx) * 0.14 - 180,
-    z: (from.z + to.z) / 2 - 980,
+    z: (from.z + to.z) / 2 - 620,
     pitch: (from.pitch + to.pitch) / 2 + 11,
     yaw: (from.yaw + to.yaw) / 2 + (dx > 0 ? -16 : 16),
     roll: (from.roll + to.roll) / 2 + (dx > 0 ? 8 : -8),

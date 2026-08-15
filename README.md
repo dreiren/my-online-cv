@@ -18,3 +18,8 @@ Personal online CV and portfolio built with Next.js, three.js, and Framer Motion
 
 - Consoles sit in a 3D space with a new random layout on every page load
 - Scroll flies the camera through the void from one console to the next
+
+## Phase 2.2
+
+- Each console sits in a 3D brushed-metal chassis
+- Camera travel uses a smooth ease-in instead of a snap
