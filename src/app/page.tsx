@@ -1,11 +1,5 @@
-import Background from "@/components/background/Background";
-import Container from "@/components/Container";
+import SpaceExperience from "@/components/space/SpaceExperience";
 
 export default function Home() {
-  return (
-    <>
-      <Background />
-      <Container />
-    </>
-  );
+  return <SpaceExperience />;
 }
