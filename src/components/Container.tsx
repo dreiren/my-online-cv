@@ -61,21 +61,25 @@ export default function Container({ onFlightChange }: ContainerProps) {
   const worldTransform = useMotionTemplate`rotateX(${worldPitch}deg) rotateY(${worldYaw}deg) rotateZ(${worldRoll}deg) translate3d(${worldX}px, ${worldY}px, ${worldZ}px)`;
 
   useEffect(() => {
-    const nextPoses = generateSpacePoses();
-    const first = cameraForPose(nextPoses[0]);
-    const intro = introCamera(nextPoses[0]);
+    const frame = window.requestAnimationFrame(() => {
+      const nextPoses = generateSpacePoses();
+      const first = cameraForPose(nextPoses[0]);
+      const intro = introCamera(nextPoses[0]);
 
-    cameraRef.current = intro;
-    camX.set(intro.x);
-    camY.set(intro.y);
-    camZ.set(intro.z);
-    camPitch.set(intro.pitch);
-    camYaw.set(intro.yaw);
-    camRoll.set(intro.roll);
+      cameraRef.current = intro;
+      camX.set(intro.x);
+      camY.set(intro.y);
+      camZ.set(intro.z);
+      camPitch.set(intro.pitch);
+      camYaw.set(intro.yaw);
+      camRoll.set(intro.roll);
 
-    setPoses(nextPoses);
-    fly(intro, first, 2.05);
-    // fly is stable enough for mount-only setup; poses are created here.
+      setPoses(nextPoses);
+      fly(intro, first, 2.05);
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+    // fly is invoked only after mount to pick a fresh random layout.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -204,7 +208,10 @@ export default function Container({ onFlightChange }: ContainerProps) {
   return (
     <main className="space-shell">
       <div className="space-viewport">
-        <motion.div className="space-world" style={{ transform: worldTransform }}>
+        <motion.div
+          className="space-world"
+          style={{ transform: worldTransform, transformStyle: "preserve-3d" }}
+        >
           {poses ? (
             <>
               <SpaceSlot
