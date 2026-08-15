@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, type CSSProperties, type ReactNode } from "react";
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, type Variants } from "framer-motion";
 
 export type JarvisFrameProps = {
   children?: ReactNode;
@@ -21,28 +21,42 @@ const frameVariants = {
     transition: {
       duration: 0.72,
       times: [0, 0.16, 0.3, 0.48, 0.68, 1],
-      ease: "easeOut",
+      ease: "easeOut" as const,
     },
   },
-};
+} satisfies Variants;
 
 const chromeVariants = {
   idle: { opacity: 0, y: -6 },
   online: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.45, delay: 0.12, ease: [0.22, 1, 0.36, 1] },
+    transition: { duration: 0.45, delay: 0.12, ease: [0.22, 1, 0.36, 1] as const },
   },
-};
+} satisfies Variants;
 
 const cornerVariants = {
   idle: { opacity: 0, scale: 0.45 },
   online: {
     opacity: 1,
     scale: 1,
-    transition: { duration: 0.4, delay: 0.08, ease: [0.16, 1, 0.3, 1] },
+    transition: { duration: 0.4, delay: 0.08, ease: [0.16, 1, 0.3, 1] as const },
   },
-};
+} satisfies Variants;
+
+const scanVariants = {
+  idle: { top: "-8%", opacity: 0 },
+  online: {
+    top: ["-8%", "108%"],
+    opacity: [0, 0.85, 0],
+    transition: {
+      duration: 1.55,
+      repeat: Infinity,
+      repeatDelay: 3.4,
+      ease: "easeInOut" as const,
+    },
+  },
+} satisfies Variants;
 
 export default function JarvisFrame({
   children,
@@ -113,22 +127,7 @@ export default function JarvisFrame({
       <span className="jarvis-console__arc" />
       <span className="jarvis-console__ticks" />
 
-      <motion.span
-        className="jarvis-console__scan"
-        variants={{
-          idle: { top: "-8%", opacity: 0 },
-          online: {
-            top: ["-8%", "108%"],
-            opacity: [0, 0.85, 0],
-            transition: {
-              duration: 1.55,
-              repeat: Infinity,
-              repeatDelay: 3.4,
-              ease: "easeInOut",
-            },
-          },
-        }}
-      />
+      <motion.span className="jarvis-console__scan" variants={scanVariants} />
     </motion.article>
   );
 }
