@@ -13,3 +13,8 @@ Personal online CV and portfolio built with Next.js, three.js, and Framer Motion
 - Three blank Jarvis consoles (`Identity`, `Experience`, `Systems`)
 - One-section-per-scroll snap navigation
 - HUD boot transitions and tablet/mobile layout clamps
+
+## Phase 2.1
+
+- Consoles sit in a 3D space with a new random layout on every page load
+- Scroll flies the camera through the void from one console to the next

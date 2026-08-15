@@ -3,6 +3,7 @@
 import { useMemo, useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
+import { useSpaceFlight } from "@/components/space/SpaceFlightContext";
 
 const VOID_COLOR = "#ffffff";
 
@@ -155,12 +156,23 @@ function ScanSweep() {
 }
 
 function CameraDrift() {
-  useFrame((state) => {
+  const { activeIndex, isFlying } = useSpaceFlight();
+
+  useFrame((state, delta) => {
     const t = state.clock.elapsedTime * 0.06;
-    state.camera.position.x = Math.sin(t) * 1.15;
-    state.camera.position.y = 2.7 + Math.sin(t * 0.55) * 0.12;
-    state.camera.position.z = 10.5 + Math.cos(t * 0.7) * 0.45;
-    state.camera.lookAt(0, 1.15, 0);
+    const heading = activeIndex * 1.2;
+    const rush = isFlying ? 1.35 : 0;
+    const targetX = Math.sin(t + heading) * (1.15 + rush);
+    const targetY = 2.7 + Math.sin(t * 0.55 + heading) * 0.12 + activeIndex * 0.28;
+    const targetZ = 10.5 + Math.cos(t * 0.7) * 0.45 - activeIndex * 2.1 - rush * 1.4;
+    const lookX = Math.sin(heading) * (1.5 + rush * 0.4);
+    const lookZ = Math.cos(heading) * 0.7;
+    const step = 1 - Math.exp(-(isFlying ? 3.2 : 1.6) * delta);
+
+    state.camera.position.x = THREE.MathUtils.lerp(state.camera.position.x, targetX, step);
+    state.camera.position.y = THREE.MathUtils.lerp(state.camera.position.y, targetY, step);
+    state.camera.position.z = THREE.MathUtils.lerp(state.camera.position.z, targetZ, step);
+    state.camera.lookAt(lookX, 1.15, lookZ);
   });
 
   return null;

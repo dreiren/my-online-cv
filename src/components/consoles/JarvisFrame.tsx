@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef, type CSSProperties, type ReactNode } from "react";
-import { motion, useInView, type Variants } from "framer-motion";
+import { type CSSProperties, type ReactNode } from "react";
+import { motion, type Variants } from "framer-motion";
 
 export type JarvisFrameProps = {
   children?: ReactNode;
@@ -11,16 +11,17 @@ export type JarvisFrameProps = {
   width: string;
   height: string;
   accent?: string;
+  active?: boolean;
 };
 
 const frameVariants = {
-  idle: { opacity: 0.18, scale: 0.975 },
+  idle: { opacity: 0.72, scale: 0.96 },
   online: {
-    opacity: [0.18, 0.55, 0.22, 1, 0.72, 1],
+    opacity: [0.72, 0.4, 1, 0.78, 1],
     scale: 1,
     transition: {
       duration: 0.72,
-      times: [0, 0.16, 0.3, 0.48, 0.68, 1],
+      times: [0, 0.18, 0.42, 0.64, 1],
       ease: "easeOut" as const,
     },
   },
@@ -66,13 +67,10 @@ export default function JarvisFrame({
   width,
   height,
   accent = "#12c0e0",
+  active = false,
 }: JarvisFrameProps) {
-  const ref = useRef<HTMLElement>(null);
-  const isInView = useInView(ref, { amount: 0.55 });
-
   return (
     <motion.article
-      ref={ref}
       className="jarvis-console"
       style={
         {
@@ -83,7 +81,7 @@ export default function JarvisFrame({
       }
       variants={frameVariants}
       initial="idle"
-      animate={isInView ? "online" : "idle"}
+      animate={active ? "online" : "idle"}
       aria-label={`${title} console`}
     >
       <motion.span
@@ -111,7 +109,7 @@ export default function JarvisFrame({
         <div className="jarvis-console__status">
           <span className="jarvis-console__module">{moduleId}</span>
           <span className="jarvis-console__live">
-            {isInView ? "ONLINE" : "STANDBY"}
+            {active ? "ONLINE" : "STANDBY"}
           </span>
         </div>
       </motion.header>
@@ -121,7 +119,7 @@ export default function JarvisFrame({
       <motion.footer className="jarvis-console__chrome" variants={chromeVariants}>
         <span>J.A.R.V.I.S. // LINK</span>
         <span className="jarvis-console__size">SIZE.FLEX</span>
-        <span>{isInView ? "SYS.READY" : "SYS.IDLE"}</span>
+        <span>{active ? "SYS.READY" : "SYS.IDLE"}</span>
       </motion.footer>
 
       <span className="jarvis-console__arc" />
