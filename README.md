@@ -23,3 +23,9 @@ Personal online CV and portfolio built with Next.js, three.js, and Framer Motion
 
 - Each console sits in a 3D brushed-metal chassis
 - Camera travel uses a smooth ease-in instead of a snap
+
+## Phase 2.3
+
+- Particle boot sequence with hover interface
+- Splash zoom transition into a 3D Jarvis identity console
+- Console includes an image block and a details block

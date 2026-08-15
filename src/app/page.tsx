@@ -1,5 +1,5 @@
-import SpaceExperience from "@/components/space/SpaceExperience";
+import JarvisExperience from "@/components/experience/JarvisExperience";
 
 export default function Home() {
-  return <SpaceExperience />;
+  return <JarvisExperience />;
 }
