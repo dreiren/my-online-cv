@@ -82,6 +82,11 @@ function InfiniteGrid({
   );
 }
 
+function hashedUnit(index: number, salt: number) {
+  const n = Math.sin(index * 127.1 + salt * 311.7) * 43758.5453;
+  return n - Math.floor(n);
+}
+
 function FloatingParticles() {
   const pointsRef = useRef<THREE.Points>(null);
 
@@ -90,9 +95,9 @@ function FloatingParticles() {
     const positions = new Float32Array(count * 3);
 
     for (let i = 0; i < count; i += 1) {
-      positions[i * 3] = (Math.random() - 0.5) * 48;
-      positions[i * 3 + 1] = Math.random() * 14 + 0.2;
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 48;
+      positions[i * 3] = (hashedUnit(i, 1) - 0.5) * 48;
+      positions[i * 3 + 1] = hashedUnit(i, 2) * 14 + 0.2;
+      positions[i * 3 + 2] = (hashedUnit(i, 3) - 0.5) * 48;
     }
 
     const geo = new THREE.BufferGeometry();
