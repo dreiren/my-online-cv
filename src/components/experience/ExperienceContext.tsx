@@ -1,13 +1,12 @@
 "use client";
 
-import { createContext, useContext, type MutableRefObject } from "react";
+import { createContext, useContext } from "react";
 
 export type ExperiencePhase = "boot" | "splash" | "console";
 
 export type ExperienceContextValue = {
   phase: ExperiencePhase;
   progress: number;
-  pointer: MutableRefObject<{ x: number; y: number }>;
   beginSplash: () => void;
   beginConsole: () => void;
 };

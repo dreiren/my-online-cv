@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Background from "@/components/background/Background";
 import ParticleLoader from "@/components/loader/ParticleLoader";
 import LoadingHud from "@/components/loader/LoadingHud";
@@ -13,7 +13,6 @@ import {
 export default function JarvisExperience() {
   const [phase, setPhase] = useState<ExperiencePhase>("boot");
   const [progress, setProgress] = useState(0);
-  const pointer = useRef({ x: 0, y: 0 });
 
   const beginSplash = useCallback(() => {
     setProgress(1);
@@ -44,7 +43,6 @@ export default function JarvisExperience() {
     () => ({
       phase,
       progress,
-      pointer,
       beginSplash,
       beginConsole,
     }),

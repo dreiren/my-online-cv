@@ -4,10 +4,9 @@ import { useEffect } from "react";
 import { motion, useMotionTemplate, useSpring } from "framer-motion";
 import ImageBlock from "./ImageBlock";
 import DetailBlock from "./DetailBlock";
-import { useExperience } from "@/components/experience/ExperienceContext";
+import { inputPointer } from "@/components/experience/pointerStore";
 
 export default function DigitalConsole() {
-  const { pointer } = useExperience();
   const rotX = useSpring(0, { stiffness: 90, damping: 16, mass: 0.55 });
   const rotY = useSpring(0, { stiffness: 90, damping: 16, mass: 0.55 });
   const transX = useSpring(0, { stiffness: 70, damping: 18, mass: 0.7 });
@@ -20,8 +19,8 @@ export default function DigitalConsole() {
     const onMove = (event: MouseEvent) => {
       const nx = event.clientX / window.innerWidth - 0.5;
       const ny = event.clientY / window.innerHeight - 0.5;
-      pointer.current.x = nx * 2;
-      pointer.current.y = -ny * 2;
+      inputPointer.x = nx * 2;
+      inputPointer.y = -ny * 2;
       rotY.set(nx * 16);
       rotX.set(-ny * 11);
       transX.set(nx * 22);
@@ -43,7 +42,7 @@ export default function DigitalConsole() {
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("mouseleave", onLeave);
     };
-  }, [pointer, rotX, rotY, transX, transY, transZ]);
+  }, [rotX, rotY, transX, transY, transZ]);
 
   return (
     <div className="console-space">

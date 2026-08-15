@@ -4,6 +4,7 @@ import { useContext, useMemo, useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { ExperienceContext } from "@/components/experience/ExperienceContext";
+import { inputPointer } from "@/components/experience/pointerStore";
 
 const VOID_COLOR = "#ffffff";
 
@@ -161,11 +162,10 @@ function CameraDrift() {
   useFrame((state, delta) => {
     const t = state.clock.elapsedTime * 0.06;
     const phase = experience?.phase ?? "boot";
-    const pointer = experience?.pointer.current ?? { x: 0, y: 0 };
     const hover = phase === "console" ? 1 : 0;
     const splash = phase === "splash" ? 1 : 0;
-    const targetX = Math.sin(t) * 1.05 + pointer.x * 1.5 * hover;
-    const targetY = 2.7 + Math.sin(t * 0.55) * 0.12 + pointer.y * 0.45 * hover;
+    const targetX = Math.sin(t) * 1.05 + inputPointer.x * 1.5 * hover;
+    const targetY = 2.7 + Math.sin(t * 0.55) * 0.12 + inputPointer.y * 0.45 * hover;
     const targetZ = 10.5 - splash * 3.4 - hover * 0.8;
     const step = 1 - Math.exp(-(splash ? 3.4 : 1.6) * delta);
 
@@ -184,7 +184,7 @@ function CameraDrift() {
       targetZ,
       step,
     );
-    state.camera.lookAt(pointer.x * 0.8 * hover, 1.15, 0);
+    state.camera.lookAt(inputPointer.x * 0.8 * hover, 1.15, 0);
   });
 
   return null;

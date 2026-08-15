@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { useExperience, type ExperiencePhase } from "@/components/experience/ExperienceContext";
+import { inputPointer } from "@/components/experience/pointerStore";
 
 const CLOUD_COUNT = 760;
 const RING_COUNT = 220;
@@ -103,14 +104,13 @@ function ParticleSystem({
   const splashDone = useRef(false);
   const bootStart = useRef<number | null>(null);
   const splashStart = useRef<number | null>(null);
-  const { pointer, camera, gl } = useThree();
-  const experience = useExperience();
+  const velocitiesRef = useRef(new Float32Array(TOTAL * 3));
+  const cursorVec = useRef(new THREE.Vector3());
+  const scratchVec = useRef(new THREE.Vector3());
+  const forwardVec = useRef(new THREE.Vector3());
+  const { pointer, gl } = useThree();
 
   const layout = useMemo(() => createParticleLayout(), []);
-  const velocities = useMemo(() => new Float32Array(TOTAL * 3), []);
-  const cursor = useMemo(() => new THREE.Vector3(), []);
-  const scratch = useMemo(() => new THREE.Vector3(), []);
-  const forward = useMemo(() => new THREE.Vector3(), []);
 
   const geometry = useMemo(() => {
     const geo = new THREE.BufferGeometry();
@@ -120,13 +120,15 @@ function ParticleSystem({
     return geo;
   }, [layout]);
 
-  const linePositions = useMemo(() => new Float32Array(240 * 6), []);
   const lineGeometry = useMemo(() => {
     const geo = new THREE.BufferGeometry();
-    geo.setAttribute("position", new THREE.BufferAttribute(linePositions, 3));
+    geo.setAttribute(
+      "position",
+      new THREE.BufferAttribute(new Float32Array(240 * 6), 3),
+    );
     geo.setDrawRange(0, 0);
     return geo;
-  }, [linePositions]);
+  }, []);
 
   useEffect(() => {
     phaseRef.current = phase;
@@ -145,16 +147,21 @@ function ParticleSystem({
     const mat = materialRef.current;
     if (!points || !mat) return;
 
+    const camera = state.camera as THREE.PerspectiveCamera;
     const positions = points.geometry.getAttribute("position") as THREE.BufferAttribute;
     const colors = points.geometry.getAttribute("aColor") as THREE.BufferAttribute;
     const sizes = points.geometry.getAttribute("aSize") as THREE.BufferAttribute;
     const now = performance.now();
     const currentPhase = phaseRef.current;
+    const cursor = cursorVec.current;
+    const scratch = scratchVec.current;
+    const forward = forwardVec.current;
+    const velocities = velocitiesRef.current;
 
     camera.getWorldDirection(forward);
     cursor.set(pointer.x * 4.2, pointer.y * 2.4, 0.9);
-    experience.pointer.current.x = pointer.x;
-    experience.pointer.current.y = pointer.y;
+    inputPointer.x = pointer.x;
+    inputPointer.y = pointer.y;
 
     const hovering = pointer.x !== 0 || pointer.y !== 0;
     const hoverStrength = hovering && currentPhase === "boot" ? 1 : 0;
@@ -254,14 +261,12 @@ function ParticleSystem({
           colors.setXYZ(i, 0.35 + force * 0.65, 0.95, 1);
           sizes.array[i] = layout.sizes[i] * (1.15 + force * 1.7);
 
-          if (lineCount < 80 && force > 0.35) {
-            const li = lineCount * 6;
-            linePositions[li] = cursor.x;
-            linePositions[li + 1] = cursor.y;
-            linePositions[li + 2] = cursor.z;
-            linePositions[li + 3] = x;
-            linePositions[li + 4] = y;
-            linePositions[li + 5] = z;
+          if (lineCount < 80 && force > 0.35 && linesRef.current) {
+            const linePos = linesRef.current.geometry.getAttribute(
+              "position",
+            ) as THREE.BufferAttribute;
+            linePos.setXYZ(lineCount * 2, cursor.x, cursor.y, cursor.z);
+            linePos.setXYZ(lineCount * 2 + 1, x, y, z);
             lineCount += 1;
           }
         } else {
