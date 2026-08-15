@@ -1,9 +1,9 @@
 "use client";
 
-import { useMemo, useRef } from "react";
+import { useContext, useMemo, useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import { useSpaceFlight } from "@/components/space/SpaceFlightContext";
+import { ExperienceContext } from "@/components/experience/ExperienceContext";
 
 const VOID_COLOR = "#ffffff";
 
@@ -156,23 +156,35 @@ function ScanSweep() {
 }
 
 function CameraDrift() {
-  const { activeIndex, isFlying } = useSpaceFlight();
+  const experience = useContext(ExperienceContext);
 
   useFrame((state, delta) => {
     const t = state.clock.elapsedTime * 0.06;
-    const heading = activeIndex * 1.2;
-    const rush = isFlying ? 1.35 : 0;
-    const targetX = Math.sin(t + heading) * (1.15 + rush);
-    const targetY = 2.7 + Math.sin(t * 0.55 + heading) * 0.12 + activeIndex * 0.28;
-    const targetZ = 10.5 + Math.cos(t * 0.7) * 0.45 - activeIndex * 2.1 - rush * 1.4;
-    const lookX = Math.sin(heading) * (1.5 + rush * 0.4);
-    const lookZ = Math.cos(heading) * 0.7;
-    const step = 1 - Math.exp(-(isFlying ? 3.2 : 1.6) * delta);
+    const phase = experience?.phase ?? "boot";
+    const pointer = experience?.pointer.current ?? { x: 0, y: 0 };
+    const hover = phase === "console" ? 1 : 0;
+    const splash = phase === "splash" ? 1 : 0;
+    const targetX = Math.sin(t) * 1.05 + pointer.x * 1.5 * hover;
+    const targetY = 2.7 + Math.sin(t * 0.55) * 0.12 + pointer.y * 0.45 * hover;
+    const targetZ = 10.5 - splash * 3.4 - hover * 0.8;
+    const step = 1 - Math.exp(-(splash ? 3.4 : 1.6) * delta);
 
-    state.camera.position.x = THREE.MathUtils.lerp(state.camera.position.x, targetX, step);
-    state.camera.position.y = THREE.MathUtils.lerp(state.camera.position.y, targetY, step);
-    state.camera.position.z = THREE.MathUtils.lerp(state.camera.position.z, targetZ, step);
-    state.camera.lookAt(lookX, 1.15, lookZ);
+    state.camera.position.x = THREE.MathUtils.lerp(
+      state.camera.position.x,
+      targetX,
+      step,
+    );
+    state.camera.position.y = THREE.MathUtils.lerp(
+      state.camera.position.y,
+      targetY,
+      step,
+    );
+    state.camera.position.z = THREE.MathUtils.lerp(
+      state.camera.position.z,
+      targetZ,
+      step,
+    );
+    state.camera.lookAt(pointer.x * 0.8 * hover, 1.15, 0);
   });
 
   return null;
